@@ -1,0 +1,190 @@
+scanner:
+  min_quote_volume_24h_usd: 10000000
+  min_open_interest_usd: 5000000
+  exclude_symbols:
+  - USDC
+  - BUSD
+  - TUSD
+  - FDUSD
+  funding_extreme_threshold: 0.0008
+  ls_ratio_long_extreme: 1.5        # legacy/dashboard only; Scanner now uses LS_POSIT below
+  ls_ratio_short_extreme: 0.63       # legacy/dashboard only; Scanner now uses LS_POSIT below
+  ls_position_long_extreme: 1.5      # LS_POSIT long crowding gate
+  ls_position_short_extreme: 0.63    # LS_POSIT short crowding gate
+  oi_change_4h_threshold: 0.1
+  top_n_to_monitor: 40
+  scan_interval_seconds: 90
+  
+data_collector:
+  ohlcv_timeframes:
+  - 15m
+  - 1h
+  - 4h
+  ohlcv_lookback_candles: 200
+  fetch_interval_seconds: 60
+liquidity_engine:
+  swing_lookback_candles: 50
+  liquidity_zone_proximity_pct: 0.005
+  
+positioning:
+  funding_high_threshold: 0.0003  # Funding > +0.03%
+  funding_low_threshold: -0.0003  # Funding < -0.03%
+  ls_crowded_long: 1.8            # was 2.0
+  ls_crowded_short: 0.6           # was 0.6
+  min_short_pct_for_long: 63      # was 66
+  min_long_pct_for_short: 63      # was 66
+  
+  strict_gate_enabled: false   #التبديل بين الاستراتيجيات
+  authority_weights:
+    funding: 25.0
+    ls_position: 20.0
+    oi_expansion: 15.0
+  vwap_weights:
+    vwap_15m: 10.0
+    vwap_1h: 10.0
+    vwap_4h: 10.0
+  thresholds:
+    watch: 45.0
+    signal: 60.0
+    strong: 80.0
+  oi_expansion_full_score_pct: 0.08
+  
+decision_engine:
+  weights:
+    liquidity_imbalance: 0.35
+    positioning_extremity: 0.3
+    oi_behavior: 0.2
+    price_action_confluence: 0.15
+  execution_weights:
+    liquidity_density: 8.0
+    ls_account: 4.0
+  min_short_pct_for_long: 66
+  min_long_pct_for_short: 66
+  vwap_near_threshold_pct: 0.25
+  trending_market_penalty_on_reversal: 0.2
+  range_market_bonus_on_reversal: 0.15
+  min_score_to_signal: 60.0
+  min_score_full_size: 80.0
+  veto:
+    max_spread_pct: 0.001
+    already_ran_pct: 0.015
+    
+context_layer:
+  lookback_hours: 24
+  oi_buildup_window_hours: 4
+  
+regime_detector:
+  adx_period: 14
+  trending_threshold: 25
+  ranging_threshold: 20
+  bb_width_period: 20
+  min_score_to_signal: 55
+  min_score_full_size: 70
+  trending_market_penalty_on_reversal: 0.3
+  range_market_bonus_on_reversal: 0.15
+  veto:
+    max_spread_pct: 0.001
+    already_ran_pct: 0.08
+    
+trigger_confirmation:
+  required_confirmations: 2
+  volume_spike_multiplier: 1.0
+  oi_reaction_threshold: 0.003
+  rejection_wick_ratio: 0.35
+  rejection_wick_body_ratio: 1.5
+  
+trade_generator:
+  max_open_per_symbol: 1
+  min_decision_score: 60.0
+  min_risk_reward_ratio: 1.7
+  rr_soft_floor: 1.5
+  rr_high_score_threshold: 80.0
+  min_sl_distance_pct: 0.004
+  min_zone_distance_pct: 0.003
+  max_zone_distance_pct: 0.04
+  rejection_dedup_window_sec: 300
+  preferred_risk_reward_ratio: 2.5
+  entry_zone_width_pct: 0.03
+  stop_buffer_pct: 0.002
+  max_entry_distance_pct: 0.05
+  max_sl_distance_pct: 0.1
+  min_execution_quality_score: 50.0
+  breathing_buffer_multiplier: 0.35
+paper_executor:
+  initial_capital_usd: 1000
+  risk_per_trade_pct: 0.03
+  max_concurrent_trades: 10
+  slippage_entry_pct: 0.0005
+  slippage_stop_pct: 0.001
+  spread_pct: 0.0002
+  missed_entry_max_pct: 0.04
+  daily_max_loss_pct: 0.2
+  daily_max_consecutive_losses: 10
+  cooldown_after_tp_minutes: 60
+  cooldown_after_sl_minutes: 120
+  cooldown_after_cancel_minutes: 30
+  tp1_r: 0.4
+  break_even_r: 1.0
+  trailing_r: 1.5
+  trailing_distance_r: 0.8
+  tp1_close_pct: 0.25
+backtest:
+  default_lookback_days: 180
+  fee_pct: 0.0004
+  warmup_candles: 100
+alerts:
+  telegram_enabled: true
+  alert_on_setup: true
+  alert_on_trigger: true
+  alert_on_exit: true
+ui:
+  theme: dark
+  refresh_interval_seconds: 5
+  port: 8082
+  host: 0.0.0.0
+liquidity_distance:
+  enabled: true
+  high_distance_pct: 0.5
+  normal_distance_pct: 1.0
+  low_distance_pct: 2.0
+  high_score: 8
+  normal_score: 5
+  low_score: 2
+  poor_score: 0
+  execution_boost_multiplier: 0.5
+learning:
+  enabled: true
+  rolling_window: 35
+  min_sample_size: 25
+  adapt_every_n_trades: 15
+  disabled_setup_regimes: []
+  setup_threshold_overrides: {}
+
+management_profiles:
+  enabled: true
+  quality_map:
+    A: AGGRESSIVE
+    B: BALANCED
+    C: CONSERVATIVE
+  profiles:
+    # V2.1 Profit Capture / Anti-Leakage Mode
+    # Based on Management + Trailing Audit:
+    # old leakage ~91%, Avg Lost After Trail > 2R.
+    CONSERVATIVE:
+      tp1_r: 0.30
+      tp1_close_pct: 0.50
+      break_even_r: 0.50
+      trailing_r: 0.80
+      trailing_distance_r: 0.30
+    BALANCED:
+      tp1_r: 0.40
+      tp1_close_pct: 0.35
+      break_even_r: 0.60
+      trailing_r: 0.90
+      trailing_distance_r: 0.35
+    AGGRESSIVE:
+      tp1_r: 0.50
+      tp1_close_pct: 0.25
+      break_even_r: 0.70
+      trailing_r: 1.00
+      trailing_distance_r: 0.40

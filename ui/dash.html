@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWEEP CORE - Market Intelligence Dashboard (Live Match)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pageBg: '#090a0f',
+                        sidebarBg: '#11141b',
+                        cardBg: '#12161f',
+                        borderCol: '#1f2635',
+                        bullish: '#00c582',
+                        bearish: '#ff3b30',
+                        warning: '#ff9500',
+                        regimePurple: '#8a2be2'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #090a0f; color: #e2e8f0; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #090a0f; }
+        ::-webkit-scrollbar-thumb { background: #1f2635; border-radius: 3px; }
+        .active-nav { background-color: #1a1f2b; color: #fff; border-right: 3px solid #8a2be2; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+    <aside class="w-64 bg-sidebarBg flex-shrink-0 flex flex-col border-r border-borderCol">
+        <div class="p-5 border-b border-borderCol flex items-center gap-3">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOGEyYmUyIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDJsOS43NyA1LjcxLTIuMDUgMTIuMTNMMTIgMjJsLTkuNzIgLDIuMTYtMi4wNSAtMTIuMTN6Ii8+PHBhdGggZD0iTTcuMjIgMTEuOTNsNC43OCAtNi44OWw0Ljc4IDYuODlsLTkuNTYgMHoiLz48cGF0aCBkPSJNMTIgMjJsMCAtOC41NSIvPjwvc3ZnPg==" alt="Logo" class="w-8 h-8">
+            <div>
+                <h1 class="text-lg font-bold text-white tracking-wider">SWEEP CORE</h1>
+                <p class="text-[10px] text-gray-500">MARKET INTELLIGENCE</p>
+            </div>
+        </div>
+        
+        <nav class="flex-1 px-2 py-4 space-y-1 text-xs text-gray-400">
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg active-nav"><i class="fa-solid fa-house-chimney w-4 text-center"></i> Overview</a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-gray-800/40"><i class="fa-solid fa-chart-line w-4 text-center"></i> Market State</a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-gray-800/40"><i class="fa-solid fa-map-location-dot w-4 text-center"></i> Liquidity Map</a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-gray-800/40"><i class="fa-solid fa-fingerprint w-4 text-center"></i> Regime Detector</a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-gray-800/40"><i class="fa-solid fa-shield-halved w-4 text-center"></i> Risk Environment</a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-gray-800/40"><i class="fa-solid fa-cubes w-4 text-center"></i> Market Breadth</a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-gray-800/40"><i class="fa-solid fa-robot w-4 text-center"></i> Bot Performance</a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-gray-800/40"><i class="fa-solid fa-tower-broadcast w-4 text-center"></i> Signals Scanner</a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-gray-800/40"><i class="fa-solid fa-eye w-4 text-center"></i> Watchlist</a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-gray-800/40"><i class="fa-solid fa-bell w-4 text-center"></i> Alerts</a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-gray-800/40"><i class="fa-solid fa-gear w-4 text-center"></i> Settings</a>
+        </nav>
+        
+        <div class="p-4 border-t border-borderCol text-xs space-y-1.5 text-gray-500">
+            <p>SYSTEM STATUS</p>
+            <div class="flex items-center gap-2 text-bullish font-medium"><i class="fa-solid fa-circle text-[8px]"></i> OPERATIONAL</div>
+            <div class="flex justify-between text-[10px]">
+                <span>Data Source: <span class="text-bullish">BINANCE FAPI</span></span>
+                <span id="sync-time" class="font-mono text-warning">Syncing...</span>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto bg-pageBg">
+        
+        <header class="p-6 pb-2 flex justify-between items-start gap-4">
+            <div>
+                <h2 class="text-xl font-bold text-white tracking-wider">MARKET INTELLIGENCE DASHBOARD</h2>
+                <p class="text-xs text-gray-500">Real-time Market Analysis & Context</p>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                <div class="bg-cardBg p-2.5 rounded-lg border border-borderCol min-w-[140px]">
+                    <span class="text-gray-500 block mb-1">BTCUSDT Perpetual</span>
+                    <span id="btc-price" class="font-mono font-bold text-gray-300">Connecting...</span>
+                </div>
+                <div class="bg-cardBg p-2.5 rounded-lg border border-borderCol min-w-[140px]">
+                    <span class="text-gray-500 block mb-1">ETHUSDT Perpetual</span>
+                    <span id="eth-price" class="font-mono font-bold text-gray-300">Connecting...</span>
+                </div>
+                <div class="bg-cardBg p-2.5 rounded-lg border border-borderCol">
+                    <span class="text-gray-500 block mb-1">Total Mkt Cap</span>
+                    <span class="font-bold text-bullish">3.42T <i class="fa-solid fa-caret-up"></i> +1.45%</span>
+                </div>
+                <div class="bg-cardBg p-2.5 rounded-lg border border-borderCol">
+                    <span class="text-gray-500 block mb-1">BTC.D</span>
+                    <span class="font-bold text-bullish">54.21% <i class="fa-solid fa-caret-up"></i> +0.38%</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="px-6 py-2 border-b border-borderCol flex justify-end gap-3 text-xs">
+            <select class="bg-cardBg px-3 py-1.5 rounded-md border border-borderCol text-gray-300 outline-none"><option>BINANCE:BTCUSDT</option></select>
+            <select class="bg-cardBg px-3 py-1.5 rounded-md border border-borderCol text-gray-300 outline-none"><option>1H</option></select>
+            <div class="flex items-center gap-2 bg-cardBg px-3 py-1.5 rounded-md border border-borderCol text-gray-500"><i class="fa-regular fa-clock"></i> <span id="current-time"></span> UTC</div>
+        </div>
+
+        <div class="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="space-y-6">
+                <div class="bg-cardBg border border-borderCol rounded-xl p-5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-1 h-full bg-regimePurple"></div>
+                    <div class="flex justify-between items-center mb-4 pb-2 border-b border-borderCol/50">
+                        <h3 class="text-xs font-bold text-gray-400 tracking-wider"><span class="bg-regimePurple/20 text-regimePurple px-1.5 py-0.5 rounded mr-1">1</span> MARKET STATE ENGINE</h3>
+                        <i class="fa-solid fa-circle-question text-gray-600 text-xs cursor-help"></i>
+                    </div>
+                    <div class="bg-sidebarBg p-4 rounded-lg border border-borderCol text-center mb-4">
+                        <p class="text-[10px] text-gray-500 mb-0.5">Current Market State</p>
+                        <p id="market-state-text" class="text-2xl font-black text-warning tracking-widest">RANGING</p>
+                        <div class="mt-3 text-xs">
+                            <div class="flex justify-between text-gray-500 mb-0.5"><span>Confidence</span> <span class="text-warning font-bold">72%</span></div>
+                            <div class="w-full bg-gray-800 h-1.5 rounded-full"><div class="bg-warning h-1.5 rounded-full" style="width: 72%"></div></div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-bullish font-medium flex items-center gap-2 mb-3"><i class="fa-solid fa-circle text-[6px]"></i> Liquidity Sweeps Active on Both Sides</p>
+                    <div class="text-xs space-y-1 text-gray-400">
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-check text-warning text-[10px]"></i> Mean Reversion favored</div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-check text-warning text-[10px]"></i> Choppy Price Action / Stop Hunts</div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-check text-warning text-[10px]"></i> Low Directional Conviction</div>
+                    </div>
+                </div>
+
+                <div class="bg-cardBg border border-borderCol rounded-xl p-5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-1 h-full bg-regimePurple"></div>
+                    <div class="flex justify-between items-center mb-4 pb-2 border-b border-borderCol/50">
+                        <h3 class="text-xs font-bold text-gray-400 tracking-wider"><span class="bg-regimePurple/20 text-regimePurple px-1.5 py-0.5 rounded mr-1">4</span> REGIME DETECTION</h3>
+                        <i class="fa-solid fa-circle-question text-gray-600 text-xs cursor-help"></i>
+                    </div>
+                    <div class="bg-sidebarBg p-3.5 rounded-lg border border-borderCol text-center mb-3">
+                        <p class="text-[10px] text-gray-500 mb-0.5">Current Regime</p>
+                        <p class="text-base font-extrabold text-regimePurple tracking-wide">MANIPULATION REGIME</p>
+                        <span class="text-[10px] text-gray-500 mt-0.5 block">Confidence: 68%</span>
+                    </div>
+                    <div class="bg-sidebarBg/50 p-3 rounded-lg text-xs space-y-1.5 border border-borderCol">
+                        <p class="text-[11px] font-semibold text-gray-300">Bot Logic Adjustment:</p>
+                        <div class="flex justify-between text-gray-400"><span>MOMENTUM:</span> <span class="font-mono">reduce_size()</span></div>
+                        <div class="flex justify-between bg-regimePurple/5 px-1 py-0.5 rounded"><span class="text-regimePurple font-bold">MANIPULATION:</span> <span class="text-bullish font-bold font-mono">allow_aggressive_entries()</span></div>
+                        <div class="flex justify-between text-gray-400"><span>CHOPPY:</span> <span class="text-bearish font-mono">block_trading()</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-cardBg border border-borderCol rounded-xl p-5 relative overflow-hidden h-full flex flex-col justify-between">
+                    <div>
+                        <div class="absolute top-0 right-0 w-1 h-full bg-regimePurple"></div>
+                        <div class="flex justify-between items-center mb-4 pb-2 border-b border-borderCol/50">
+                            <h3 class="text-xs font-bold text-gray-400 tracking-wider"><span class="bg-regimePurple/20 text-regimePurple px-1.5 py-0.5 rounded mr-1">2</span> LIQUIDITY MAP</h3>
+                            <i class="fa-solid fa-circle-question text-gray-600 text-xs cursor-help"></i>
+                        </div>
+                        
+                        <div class="flex justify-center items-center gap-1.5 mb-5 font-mono text-[9px] relative h-20">
+                            <div class="space-y-0.5 w-5 h-full flex flex-col-reverse items-center justify-end">
+                                <div class="w-full h-1 bg-bullish opacity-10 rounded-sm"></div>
+                                <div class="w-full h-1 bg-bullish opacity-20 rounded-sm"></div>
+                                <div class="w-full h-1 bg-bullish opacity-40 rounded-sm"></div>
+                                <div class="w-full h-1.5 bg-bullish opacity-60 rounded-sm"></div>
+                                <div class="w-full h-2 bg-bullish opacity-80 rounded-sm"></div>
+                                <div class="w-full h-3 bg-bullish rounded-sm"></div>
+                                <div class="w-full h-1 bg-bullish rounded-sm"></div>
+                            </div>
+                            
+                            <div class="relative flex-1 flex flex-col items-center justify-center border-x-2 border-dashed border-borderCol">
+                                <span class="text-[9px] text-gray-600 mb-1">Current Price</span>
+                                <span id="gauge-live-price" class="text-xl font-bold text-white">Loading...</span>
+                                <span class="text-gray-600 mt-0.5">Binance FAPI</span>
+                            </div>
+                            
+                            <div class="space-y-0.5 w-5 h-full flex flex-col items-center justify-start">
+                                <div class="w-full h-2 bg-bearish opacity-70 rounded-sm"></div>
+                                <div class="w-full h-1.5 bg-bearish opacity-40 rounded-sm"></div>
+                                <div class="w-full h-1 bg-bearish opacity-20 rounded-sm"></div>
+                                <div class="w-full h-1 bg-bearish opacity-10 rounded-sm"></div>
+                                <div class="w-full h-0.5 bg-bearish opacity-5 rounded-sm"></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3.5 mb-4 text-xs">
+                            <div class="bg-sidebarBg p-3.5 rounded-lg border border-borderCol border-r-2 border-r-bullish">
+                                <span class="text-[10px] text-gray-500 block mb-0.5">LIQUIDITY ABOVE</span>
+                                <span id="liq-above" class="text-lg font-extrabold text-white">$ 8.24B</span>
+                                <span class="text-[10px] text-bullish mt-1 block">Pools Detected: 6</span>
+                            </div>
+                            <div class="bg-sidebarBg p-3.5 rounded-lg border border-borderCol border-r-2 border-r-bearish">
+                                <span class="text-[10px] text-gray-500 block mb-0.5">LIQUIDITY BELOW</span>
+                                <span id="liq-below" class="text-lg font-extrabold text-white">$ 3.16B</span>
+                                <span class="text-[10px] text-gray-500 mt-1 block">Pools Detected: 4</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-sidebarBg p-3 rounded-lg border border-borderCol space-y-2 text-xs">
+                        <div class="flex justify-between"><span>Crowd Bias:</span> <span class="text-bullish font-bold">LONG HEAVY</span></div>
+                        <div class="flex justify-between"><span>Funding Rate (Live):</span> <span id="btc-funding" class="text-gray-400 font-mono font-bold">...</span></div>
+                        <div class="flex justify-between"><span>OI Expansion:</span> <span class="text-bullish font-bold">HIGH</span></div>
+                        <div class="border-t border-borderCol/50 pt-1.5 text-center text-[11px] text-warning font-medium">
+                            <i class="fa-solid fa-magnet text-[10px]"></i> Upside liquidity magnet likely before reversal
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-cardBg border border-borderCol rounded-xl p-5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-1 h-full bg-regimePurple"></div>
+                    <div class="flex justify-between items-center mb-4 pb-2 border-b border-borderCol/50">
+                        <h3 class="text-xs font-bold text-gray-400 tracking-wider"><span class="bg-regimePurple/20 text-regimePurple px-1.5 py-0.5 rounded mr-1">3</span> RISK ENVIRONMENT</h3>
+                        <i class="fa-solid fa-circle-question text-gray-600 text-xs cursor-help"></i>
+                    </div>
+                    <div class="bg-sidebarBg p-3 rounded-lg border border-borderCol flex justify-between items-center mb-3">
+                        <div class="text-center w-1/2 border-r border-borderCol">
+                            <p class="text-[10px] text-gray-500 mb-0.5">Risk Level</p>
+                            <span id="risk-level-tag" class="text-lg font-extrabold text-warning">MODERATE</span>
+                        </div>
+                        <div class="text-center w-1/2 text-gray-400">
+                            <p class="text-[10px] text-gray-500 mb-0.5">Risk Score</p>
+                            <span class="text-sm font-bold">56/100</span>
+                        </div>
+                    </div>
+                    <div class="bg-sidebarBg/60 p-3 rounded-lg text-xs space-y-1.5 text-gray-400 border border-borderCol">
+                        <div class="flex justify-between"><span>Volatility Quality:</span> <span class="text-warning font-bold">Medium</span></div>
+                        <div class="flex justify-between"><span>Spread Quality:</span> <span class="text-bullish font-bold">Optimal</span></div>
+                        <div class="flex justify-between"><span>Liquidation Cascade:</span> <span class="text-warning font-bold">Active</span></div>
+                    </div>
+                </div>
+
+                <div class="bg-cardBg border border-borderCol rounded-xl p-5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-1 h-full bg-regimePurple"></div>
+                    <div class="flex justify-between items-center mb-4 pb-2 border-b border-borderCol/50">
+                        <h3 class="text-xs font-bold text-gray-400 tracking-wider"><span class="bg-regimePurple/20 text-regimePurple px-1.5 py-0.5 rounded mr-1">5</span> MARKET BREADTH</h3>
+                        <i class="fa-solid fa-circle-question text-gray-600 text-xs cursor-help"></i>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 text-center text-xs">
+                        <div class="bg-sidebarBg p-3 rounded-lg border border-borderCol">
+                            <span class="text-[10px] text-gray-500 block mb-1">Coins Above VWAP</span>
+                            <span class="text-base font-extrabold text-bullish">81%</span>
+                        </div>
+                        <div class="bg-sidebarBg p-3 rounded-lg border border-borderCol">
+                            <span class="text-[10px] text-gray-500 block mb-1">Coins Trending</span>
+                            <span class="text-base font-extrabold text-warning">67%</span>
+                        </div>
+                        <div class="bg-sidebarBg p-3 rounded-lg border border-borderCol">
+                            <span class="text-[10px] text-gray-500 block mb-1">Funding Positive</span>
+                            <span class="text-base font-extrabold text-bullish">74%</span>
+                        </div>
+                        <div class="bg-sidebarBg p-3 rounded-lg border border-borderCol">
+                            <span class="text-[10px] text-gray-500 block mb-1">OI Expanding</span>
+                            <span class="text-base font-extrabold text-warning">63%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="px-6 pb-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <div class="lg:col-span-4 bg-cardBg border border-borderCol rounded-xl p-5 relative overflow-hidden h-full flex flex-col justify-between">
+                <div>
+                    <div class="absolute top-0 right-0 w-1 h-full bg-regimePurple"></div>
+                    <div class="flex justify-between items-center mb-3.5 pb-2 border-b border-borderCol/50">
+                        <h3 class="text-xs font-bold text-gray-400 tracking-wider"><span class="bg-regimePurple/20 text-regimePurple px-1.5 py-0.5 rounded mr-1">6</span> BOT PERFORMANCE CONTEXT</h3>
+                        <i class="fa-solid fa-circle-question text-gray-600 text-xs cursor-help"></i>
+                    </div>
+                    <div class="text-xs space-y-2.5 text-gray-400">
+                        <p class="text-gray-300 font-semibold mb-1">Winrate by Market State (30D):</p>
+                        <div>
+                            <div class="flex justify-between text-[11px] mb-1"><span>MANIPULATION</span> <span class="text-bullish font-bold">74%</span></div>
+                            <div class="w-full bg-gray-800 h-1.5 rounded-full"><div class="bg-bullish h-1.5 rounded-full" style="width: 74%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[11px] mb-1"><span>RANGING</span> <span class="text-bullish font-bold">68%</span></div>
+                            <div class="w-full bg-gray-800 h-1.5 rounded-full"><div class="bg-bullish h-1.5 rounded-full" style="width: 68%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[11px] mb-1"><span>TRENDING</span> <span class="text-bearish font-bold">31%</span></div>
+                            <div class="w-full bg-gray-800 h-1.5 rounded-full"><div class="bg-bearish h-1.5 rounded-full" style="width: 31%"></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2 mt-3 text-[11px] text-center border-t border-borderCol pt-3">
+                    <div class="bg-bullish/5 border border-bullish/10 rounded px-1.5 py-1">Best: <span class="font-bold text-bullish">MANIPULATION</span></div>
+                    <div class="bg-bearish/5 border border-bearish/10 rounded px-1.5 py-1">Worst: <span class="font-bold text-bearish">TRENDING</span></div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-8 bg-sidebarBg border-2 border-dashed border-bullish/30 rounded-xl p-5 flex flex-col sm:flex-row justify-between items-center gap-4 bg-gradient-to-l from-bullish/5 to-transparent">
+                <div class="flex items-center gap-4">
+                    <div class="bg-bullish/10 p-3.5 rounded-full text-bullish border border-bullish/20 animate-pulse">
+                        <i class="fa-solid fa-shield-halved text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-white uppercase tracking-widest">Trade Permission Layer</h3>
+                        <p class="text-xs text-gray-500 mt-1">Smart filter determining execution safety based on real-time market structure.</p>
+                    </div>
+                </div>
+                <div class="bg-cardBg px-8 py-4 rounded-xl border border-borderCol text-center shadow-lg min-w-[240px]">
+                    <span class="text-[10px] text-gray-600 block uppercase font-bold tracking-wider mb-0.5">Execution Status</span>
+                    <span id="permission-status" class="text-lg font-black text-bullish tracking-widest">ALLOW_TRADE</span>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="p-6 text-center text-xs text-gray-700 border-t border-borderCol/50">
+            SWEEP CORE Market Intelligence v3.11 • Update frequency: 10s • FAPI Connector Operational.
+        </footer>
+
+    </main>
+
+    <script>
+        const FAPI_BASE = 'https://fapi.binance.com';
+
+        async function fetchBinanceData() {
+            try {
+                // 1. Fetch Ticker Data for BTC & ETH (24hr stats)
+                const tickerRes = await fetch(`${FAPI_BASE}/fapi/v1/ticker/24hr`);
+                const tickers = await tickerRes.json();
+
+                const btc = tickers.find(t => t.symbol === 'BTCUSDT');
+                const eth = tickers.find(t => t.symbol === 'ETHUSDT');
+
+                if (btc) {
+                    const priceFormatted = parseFloat(btc.lastPrice).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    const changeFormatted = parseFloat(btc.priceChangePercent).toFixed(2);
+                    const isUp = changeFormatted >= 0;
+                    document.getElementById('btc-price').innerHTML = `$${priceFormatted} <span class="${isUp ? 'text-bullish' : 'text-bearish'} ml-1 font-bold">${isUp ? '+' : ''}${changeFormatted}%</span>`;
+                    
+                    // Update Gauges & Liquidity Section
+                    document.getElementById('gauge-live-price').innerText = priceFormatted;
+                    
+                    // Logic Sim: Dynamic Liquidity Values based on Price (to show movement)
+                    const dynamicAbove = (8.0 + (Math.random() * 0.4)).toFixed(2);
+                    const dynamicBelow = (3.0 + (Math.random() * 0.3)).toFixed(2);
+                    document.getElementById('liq-above').innerText = `$ ${dynamicAbove}B`;
+                    document.getElementById('liq-below').innerText = `$ ${dynamicBelow}B`;
+
+                    // Smart Permission Logic based on Change Percent (Panic detection)
+                    const permissionTag = document.getElementById('permission-status');
+                    const stateTag = document.getElementById('market-state-text');
+                    const riskTag = document.getElementById('risk-level-tag');
+
+                    if (Math.abs(changeFormatted) > 5.0) { // SimPanic: Block if huge daily change
+                        permissionTag.innerText = 'BLOCK_TRADE';
+                        permissionTag.className = 'text-lg font-black text-bearish tracking-widest';
+                        stateTag.innerText = 'EXPANSION (PANIC)';
+                        stateTag.className = 'text-2xl font-black text-bearish tracking-widest';
+                        riskTag.innerText = 'HIGH RISK';
+                        riskTag.className = 'text-lg font-extrabold text-bearish';
+                    } else {
+                        permissionTag.innerText = 'ALLOW_TRADE';
+                        permissionTag.className = 'text-lg font-black text-bullish tracking-widest';
+                        stateTag.innerText = 'RANGING';
+                        stateTag.className = 'text-2xl font-black text-warning tracking-widest';
+                        riskTag.innerText = 'MODERATE';
+                        riskTag.className = 'text-lg font-extrabold text-warning';
+                    }
+                }
+
+                if (eth) {
+                    const priceFormatted = parseFloat(eth.lastPrice).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    const changeFormatted = parseFloat(eth.priceChangePercent).toFixed(2);
+                    const isUp = changeFormatted >= 0;
+                    document.getElementById('eth-price').innerHTML = `$${priceFormatted} <span class="${isUp ? 'text-bullish' : 'text-bearish'} ml-1 font-bold">${isUp ? '+' : ''}${changeFormatted}%</span>`;
+                }
+
+                // 2. Fetch Funding Rate (Premium Index)
+                const fundingRes = await fetch(`${FAPI_BASE}/fapi/v1/premiumIndex`);
+                const fundingData = await fundingRes.json();
+                
+                const btcFunding = fundingData.find(p => p.symbol === 'BTCUSDT');
+                if (btcFunding) {
+                    const rate = (parseFloat(btcFunding.lastFundingRate) * 100).toFixed(4);
+                    const isPositive = rate >= 0;
+                    document.getElementById('btc-funding').innerHTML = `<span class="${isPositive ? 'text-bullish' : 'text-bearish'}">${rate}%</span> <span class="text-[10px] text-gray-600 font-mono">(${isPositive ? 'L Pay S' : 'S Pay L'})</span>`;
+                }
+
+                // 3. Update Sync Status Time
+                const now = new Date();
+                document.getElementById('sync-time').innerHTML = `<i class="fa-solid fa-check text-bullish"></i> Sync: ${now.toLocaleTimeString()}`;
+                document.getElementById('sync-time').className = 'font-mono text-bullish';
+
+            } catch (error) {
+                console.error("Live Data Fetch Error:", error);
+                document.getElementById('sync-time').innerHTML = `<i class="fa-solid fa-triangle-exclamation text-bearish"></i> Error`;
+                document.getElementById('sync-time').className = 'font-mono text-bearish';
+            }
+        }
+
+        // --- Helper: Current Time (UTC) ---
+        function updateUTCTime() {
+            const now = new Date();
+            const timeStr = now.toISOString().slice(11, 16);
+            document.getElementById('current-time').innerText = timeStr;
+        }
+
+        // --- Initialization ---
+        updateUTCTime();
+        fetchBinanceData();
+        setInterval(fetchBinanceData, 10000); // 10s Update Cycle
+        setInterval(updateUTCTime, 60000); // 1min time update
+    </script>
+</body>
+</html>

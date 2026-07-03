@@ -1,0 +1,42 @@
+{
+  "run_id": "run_20260526_021548_465906d5",
+  "symbol": "BTCUSDT",
+  "timeframe": "1h",
+  "days": 60,
+  "created_at": "2026-05-26T02:15:48.363562+00:00",
+  "config": {
+    "symbol": "BTCUSDT",
+    "timeframe": "1h",
+    "days": 60,
+    "initial_capital_usd": 1000.0,
+    "fee_pct": 0.0004,
+    "source_path": "backtest/sample/BTCUSDT_1h.jsonl",
+    "engine_stage": "replay_loop",
+    "replay_points": 3,
+    "strategy_events": 3,
+    "live_trading_affected": false,
+    "strategy_connected": false,
+    "execution_connected": false
+  },
+  "metrics": {
+    "total_trades": 0,
+    "wins": 0,
+    "losses": 0,
+    "win_rate": 0.0,
+    "net_pnl_usd": 0.0,
+    "net_r": 0.0,
+    "avg_r": 0.0,
+    "best_r": 0.0,
+    "worst_r": 0.0,
+    "profit_factor": 0.0
+  },
+  "trades": [],
+  "equity_curve": [
+    {
+      "timestamp": "2026-05-26T02:15:48.363549+00:00",
+      "equity_usd": 1000.0,
+      "note": "placeholder"
+    }
+  ],
+  "notes": "Backtest engine v2. Replay loop is active, but Hunter strategy and execution simulation are not connected yet."
+}

@@ -1,0 +1,80 @@
+{
+  "run_id": "run_20260526_030517_6ac47454",
+  "symbol": "BTCUSDT",
+  "timeframe": "1h",
+  "days": 60,
+  "created_at": "2026-05-26T06:05:17.164569+03:00",
+  "config": {
+    "symbol": "BTCUSDT",
+    "timeframe": "1h",
+    "days": 60,
+    "initial_capital_usd": 1000.0,
+    "fee_pct": 0.0004,
+    "source_path": "backtest/sample/BTCUSDT_1h.jsonl",
+    "engine_stage": "hunter_snapshot_bridge",
+    "replay_points": 3,
+    "hunter_snapshots": 3,
+    "strategy_events": 3,
+    "replay_diagnostics": {
+      "total_points": 3,
+      "candle_points": 3,
+      "funding_points": 3,
+      "open_interest_points": 0,
+      "open_interest_usd_points": 3,
+      "oi_change_points": 3,
+      "ls_global_points": 3,
+      "ls_top_points": 3,
+      "ls_points": 3,
+      "taker_flow_points": 0,
+      "liquidity_points": 0,
+      "price_points": 3,
+      "hunter_snapshot_points": 3,
+      "hunter_minimum_ready_points": 3,
+      "first_timestamp": "2026-05-20T00:00:00Z",
+      "last_timestamp": "2026-05-20T02:00:00Z",
+      "coverage": {
+        "candles_pct": 100.0,
+        "funding_pct": 100.0,
+        "oi_pct": 100.0,
+        "oi_change_pct": 100.0,
+        "ls_pct": 100.0,
+        "taker_flow_pct": 0.0,
+        "liquidity_pct": 0.0,
+        "price_pct": 100.0,
+        "hunter_snapshot_pct": 100.0,
+        "hunter_minimum_ready_pct": 100.0
+      },
+      "hunter_ready": true,
+      "warnings": [
+        "No liquidity zone data found; liquidity-aware replay will be limited.",
+        "No taker flow data found; CVD/divergence replay will be limited."
+      ]
+    },
+    "hunter_ready": true,
+    "live_trading_affected": false,
+    "strategy_connected": false,
+    "execution_connected": false,
+    "hunter_snapshot_bridge": true
+  },
+  "metrics": {
+    "total_trades": 0,
+    "wins": 0,
+    "losses": 0,
+    "win_rate": 0.0,
+    "net_pnl_usd": 0.0,
+    "net_r": 0.0,
+    "avg_r": 0.0,
+    "best_r": 0.0,
+    "worst_r": 0.0,
+    "profit_factor": 0.0
+  },
+  "trades": [],
+  "equity_curve": [
+    {
+      "timestamp": "2026-05-26T03:05:17.164557+00:00",
+      "equity_usd": 1000.0,
+      "note": "placeholder"
+    }
+  ],
+  "notes": "Backtest engine v4. ReplayPoint to HunterReplaySnapshot bridge is active, but Hunter strategy and execution simulation are not connected yet."
+}

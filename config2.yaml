@@ -1,0 +1,127 @@
+# Liquidity Hunter Bot — Configuration
+# All tunable parameters in one place. No magic numbers in code.
+
+scanner:
+  # Layer 1 — base liquidity filter (must pass)
+  min_quote_volume_24h_usd: 10_000_000   # $100M
+  min_open_interest_usd: 5_000_000        # $50M
+  exclude_symbols: ["USDC", "BUSD", "TUSD", "FDUSD"]  # stablecoin pairs
+
+  # Layer 2 — extremity signals (any one passes to shortlist)
+  funding_extreme_threshold: 0.0005        # ±0.05%
+  ls_ratio_long_extreme: 2.5
+  ls_ratio_short_extreme: 0.5
+  oi_change_4h_threshold: 0.10             # ±10%
+
+  # Final shortlist
+  top_n_to_monitor: 20
+  scan_interval_seconds: 120              # 5 min
+
+data_collector:
+  ohlcv_timeframes: ["15m", "1h", "4h"]
+  ohlcv_lookback_candles: 200
+  fetch_interval_seconds: 60
+
+liquidity_engine:
+  # Cluster detection
+  swing_lookback_candles: 50
+  liquidity_zone_proximity_pct: 0.005      # 0.5% band
+
+positioning:
+  # 6 market states — see docs
+  funding_high_threshold: 0.0003
+  funding_low_threshold: -0.0003
+  ls_crowded_long: 2.0
+  ls_crowded_short: 0.6
+
+context_layer:
+  lookback_hours: 24
+  oi_buildup_window_hours: 4
+
+regime_detector:
+  # Trending vs Range using ADX-equivalent
+  adx_period: 14
+  trending_threshold: 25
+  ranging_threshold: 20
+  bb_width_period: 20
+
+decision_engine:
+  # Score weights — sum must equal 1.00
+  weights:
+    liquidity_imbalance: 0.30
+    positioning_extremity: 0.25
+    oi_behavior: 0.20
+    funding_extreme: 0.15
+    price_action_confluence: 0.10
+
+  # Thresholds
+  min_score_to_signal: 55                    # FIX v1.1: was 60
+  min_score_full_size: 70                    # FIX v1.1: was 75
+
+  # Regime adjustments
+  trending_market_penalty_on_reversal: 0.30   # reduce reversal scores by 30% in strong trend
+  range_market_bonus_on_reversal: 0.15
+
+trigger_confirmation:
+  # Need 2 of 3 confirmations
+  required_confirmations: 1
+  volume_spike_multiplier: 1.3         # FIX v1.1: was 2.0               # 2x avg of last 20 candles
+  oi_reaction_threshold: 0.005          # FIX v1.1: was 0.015               # 1.5% in 5 min
+  rejection_wick_ratio: 0.40              # FIX v1.1: was 0.60                 # wick > 60% of body
+
+trade_generator:
+  min_risk_reward_ratio: 2.0
+  preferred_risk_reward_ratio: 2.5
+  entry_zone_width_pct: 0.015                # 0.3% range
+  stop_buffer_pct: 0.002                     # 0.2% buffer beyond invalidation
+
+#paper_executor:
+#  initial_capital_usd: 10_000
+#  risk_per_trade_pct: 0.03                   # 1%
+#  max_concurrent_trades: 3
+#  slippage_entry_pct: 0.0005                 # 0.05%
+#  slippage_stop_pct: 0.001                   # 0.10% (worse on stops)
+#  spread_pct: 0.0002                         # 0.02% typical futures
+#  missed_entry_max_pct: 0.03                # cancel if price runs > 3% past entry
+
+  # Daily kill-switch
+  daily_max_loss_pct: 0.05                   # stop after 5% daily loss
+  daily_max_consecutive_losses: 3
+
+backtest:
+  default_lookback_days: 180
+  fee_pct: 0.0004                            # 0.04% taker fee
+  warmup_candles: 100
+
+alerts:
+  telegram_enabled: true
+  alert_on_setup: true
+  alert_on_trigger: true
+  alert_on_exit: true
+
+ui:
+  theme: dark
+  refresh_interval_seconds: 5
+  port: 8090           # 8080 conflicts with Freqtrade UI — use 8090
+  host: 0.0.0.0
+
+learning:
+  enabled: true
+  rolling_window: 30
+  min_sample_size: 10
+  adapt_every_n_trades: 5
+  disabled_setup_regimes: []
+  setup_threshold_overrides: {}
+ 
+veto:
+  max_spread_pct: 0.001      # 0.1%  ✅
+  already_ran_pct: 0.03      # 3.0%  ← عدّلها لتتطابق مع missed_entry_max
+
+paper_executor:
+  initial_capital_usd: 10_000
+  risk_per_trade_pct: 0.03          # ⚠️ هذا 3% وليس 1% — صحّح التعليق
+  max_concurrent_trades: 3
+  slippage_entry_pct: 0.0005
+  slippage_stop_pct: 0.001
+  spread_pct: 0.0002
+  missed_entry_max_pct: 0.03

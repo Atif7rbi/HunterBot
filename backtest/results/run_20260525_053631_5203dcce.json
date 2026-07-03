@@ -1,0 +1,37 @@
+{
+  "run_id": "run_20260525_053631_5203dcce",
+  "symbol": "BTCUSDT",
+  "timeframe": "1h",
+  "days": 60,
+  "created_at": "2026-05-25T05:36:31.929817+00:00",
+  "config": {
+    "symbol": "BTCUSDT",
+    "timeframe": "1h",
+    "days": 60,
+    "initial_capital_usd": 1000.0,
+    "fee_pct": 0.0004,
+    "engine_stage": "skeleton",
+    "live_trading_affected": false
+  },
+  "metrics": {
+    "total_trades": 0,
+    "wins": 0,
+    "losses": 0,
+    "win_rate": 0.0,
+    "net_pnl_usd": 0.0,
+    "net_r": 0.0,
+    "avg_r": 0.0,
+    "best_r": 0.0,
+    "worst_r": 0.0,
+    "profit_factor": 0.0
+  },
+  "trades": [],
+  "equity_curve": [
+    {
+      "timestamp": "2026-05-25T05:36:31.929824+00:00",
+      "equity_usd": 1000.0,
+      "note": "placeholder"
+    }
+  ],
+  "notes": "Skeleton run only. No strategy logic, no live DB writes, no real market replay yet."
+}
